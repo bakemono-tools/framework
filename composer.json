@@ -1,0 +1,29 @@
+{
+    "name": "bakemono/framework",
+    "description": "The Bakemono Framework allows you to create pages whose actions are loaded dynamically.",
+    "type": "librairy",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Melvine Nargeot",
+            "email": "melvine.nargeot@gmail.com"
+        }
+    ],
+    "autoload" : {
+        "psr-4" : {
+            "Framework\\" : "src/Framework",
+            "Console\\" : "src/Console",
+            "module\\" : "module/"
+        }
+    },
+    "minimum-stability": "dev",
+    "require": {
+        "bakemono/orm": "^1.0",
+        "guzzlehttp/psr7": "^1.4",
+        "symfony/yaml": "^3.3",
+        "http-interop/response-sender": "^1.0",
+        "twig/twig": "^2.4",
+        "symfony/console": "^3.3",
+        "php-di/php-di": "^5.4"
+    }
+}
