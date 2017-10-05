@@ -26,7 +26,7 @@ class App
     {
         $this->moduleManager = new ModuleManager($rootDirPath);
         $this->router = new Router($this->moduleManager);
-        $this->renderer = new Renderer($this->moduleManager->getAllModules());
+        $this->renderer = new Renderer($this->moduleManager->getAllModules(), $rootDirPath);
 
         $entitiesSchema = new Schema();
         $entitiesSchema->parseEntitiesSchema($this->moduleManager->getMergedSchema());
