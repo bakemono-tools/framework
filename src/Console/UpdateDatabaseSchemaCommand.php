@@ -17,7 +17,7 @@ class UpdateDatabaseSchemaCommand extends Command
     public function __construct(string $rootDirPath, $name = null)
     {
         parent::__construct($name);
-        $this->rootDirPath;
+        $this->rootDirPath = $rootDirPath;
     }
 
     protected function configure()
