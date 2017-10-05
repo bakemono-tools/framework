@@ -47,7 +47,7 @@ class Module
      */
     public function getTemplateDir()
     {
-        return __DIR__ . '/../../module' . $this->templateDir;
+        return '/module' . $this->templateDir;
     }
 
     /**
