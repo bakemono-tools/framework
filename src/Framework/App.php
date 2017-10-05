@@ -10,6 +10,8 @@ use Psr\Http\Message\ServerRequestInterface;
 
 class App
 {
+    private $rootDirPath;
+
     private $moduleManager;
     private $renderer;
     private $router;
@@ -18,16 +20,17 @@ class App
 
     /**
      * App constructor.
+     * @param string $rootDirPath
      */
-    public function __construct()
+    public function __construct(string $rootDirPath)
     {
-        $this->moduleManager = new ModuleManager();
+        $this->moduleManager = new ModuleManager($rootDirPath);
         $this->router = new Router($this->moduleManager);
         $this->renderer = new Renderer($this->moduleManager->getAllModules());
 
         $entitiesSchema = new Schema();
         $entitiesSchema->parseEntitiesSchema($this->moduleManager->getMergedSchema());
-        $this->orm = new Orm(__DIR__ . "/../../config/config.yml", $entitiesSchema);
+        $this->orm = new Orm($this->rootDirPath . "/config/config.yml", $entitiesSchema);
         $this->executor = new Executor();
     }
 
