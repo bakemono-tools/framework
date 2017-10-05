@@ -11,6 +11,14 @@ use Symfony\Component\Yaml\Yaml;
 
 class CreateModuleCommand extends Command
 {
+    protected $rootDirPath;
+
+    public function __construct($rootDirPath, $name = null)
+    {
+        parent::__construct($name);
+        $this->rootDirPath = $rootDirPath;
+    }
+
     protected function configure()
     {
         $this
@@ -24,17 +32,17 @@ class CreateModuleCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $output->writeln('Création du module : '.$input->getArgument('module-name'));
-        mkdir(__DIR__ . "/../../modules/" . $input->getArgument('module-name'));
+        mkdir($this->rootDirPath . "/module/" . $input->getArgument('module-name'));
 
-        mkdir(__DIR__ . "/../../modules/" . $input->getArgument('module-name') . "/action");
-        mkdir(__DIR__ . "/../../modules/" . $input->getArgument('module-name') . "/definition");
-        mkdir(__DIR__ . "/../../modules/" . $input->getArgument('module-name') . "/entity");
-        mkdir(__DIR__ . "/../../modules/" . $input->getArgument('module-name') . "/template");
+        mkdir($this->rootDirPath . "/module/" . $input->getArgument('module-name') . "/action");
+        mkdir($this->rootDirPath . "/module/" . $input->getArgument('module-name') . "/definition");
+        mkdir($this->rootDirPath . "/module/" . $input->getArgument('module-name') . "/entity");
+        mkdir($this->rootDirPath . "/module/" . $input->getArgument('module-name') . "/template");
 
         /**
          * Definition
          */
-        touch(__DIR__ . "/../../modules/" . $input->getArgument('module-name') . "/definition/definition.yml");
+        touch($this->rootDirPath . "/module/" . $input->getArgument('module-name') . "/definition/definition.yml");
         $array = array(
             'label' => $input->getArgument('module-name'),
             'templateDir' => "/" . $input->getArgument('module-name') . "/template",
@@ -42,20 +50,20 @@ class CreateModuleCommand extends Command
             'pages' => null
         );
         $yaml = Yaml::dump($array);
-        file_put_contents(__DIR__ . "/../../modules/" . $input->getArgument('module-name') . "/definition/definition.yml", $yaml);
+        file_put_contents($this->rootDirPath . "/module/" . $input->getArgument('module-name') . "/definition/definition.yml", $yaml);
 
         /**
          * Schema
          */
-        touch(__DIR__ . "/../../modules/" . $input->getArgument('module-name') . "/definition/schema.yml");
+        touch($this->rootDirPath . "/module/" . $input->getArgument('module-name') . "/definition/schema.yml");
         $array = array(
             'entities' => null,
         );
         $yaml = Yaml::dump($array);
-        file_put_contents(__DIR__ . "/../../modules/" . $input->getArgument('module-name') . "/definition/schema.yml", $yaml);
+        file_put_contents($this->rootDirPath . "/module/" . $input->getArgument('module-name') . "/definition/schema.yml", $yaml);
 
         try {
-            $value = Yaml::parse(file_get_contents(__DIR__ . '/../../config/config.yml'));
+            $value = Yaml::parse(file_get_contents($this->rootDirPath . '/config/config.yml'));
 
             $value['modules'][] = [
                 'label' => $input->getArgument('module-name'),
@@ -64,7 +72,7 @@ class CreateModuleCommand extends Command
             ];
 
             $yaml = Yaml::dump($value);
-            file_put_contents(__DIR__ . '/../../config/config.yml', $yaml);
+            file_put_contents($this->rootDirPath . '/config/config.yml', $yaml);
 
             $formatter = $this->getHelper('formatter');
 
