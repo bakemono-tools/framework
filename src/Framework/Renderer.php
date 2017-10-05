@@ -27,7 +27,7 @@ class Renderer
         $this->loader->addPath($rootDirPath . "/module", 'layouts');
 
         foreach ($modules as $module) {
-            $this->loader->addPath($module->getTemplateDir(), $module->getLabel());
+            $this->loader->addPath($rootDirPath . $module->getTemplateDir(), $module->getLabel());
         }
 
         $this->twig = new \Twig_Environment($this->loader, []);
