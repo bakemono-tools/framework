@@ -16,18 +16,18 @@ class ModuleManager
 
     /**
      * ModuleManager constructor.
-     * @param string $moduleDirectory
+     * @param string $rootDirPath
      *
      * $moduleDirectory indique quel répertoire contient les modules.
      * Ce paramètre sert uniquement pour les test avec phpunit
      * Il permet de charger des faux modules, situés dans /tests/assets, servant aux tests.
      */
-    function __construct(string $moduleDirectory = __DIR__ . "/../../module")
+    function __construct(string $rootDirPath)
     {
         /**
          * On récupère la liste des modules situés dans /module/module.yml
          */
-        $modulesArray = Yaml::parse(file_get_contents(__DIR__ . "/../../config/config.yml"));
+        $modulesArray = Yaml::parse(file_get_contents($rootDirPath . "/config/config.yml"));
 
         /**
          * Grâce à la liste des modules on récupère leur definition dans les dossiers correspondants
@@ -37,8 +37,8 @@ class ModuleManager
         for ($i = 0; $i < $length; $i++) {
 
             $tmpArray = array_merge(
-                Yaml::parse(file_get_contents($moduleDirectory . $modulesArray['modules'][$i]['schema'])),
-                Yaml::parse(file_get_contents($moduleDirectory . $modulesArray['modules'][$i]['definition']))
+                Yaml::parse(file_get_contents($rootDirPath . "/module" . $modulesArray['modules'][$i]['schema'])),
+                Yaml::parse(file_get_contents($rootDirPath . "/module" .  $modulesArray['modules'][$i]['definition']))
             );
 
             /**
