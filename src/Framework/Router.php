@@ -7,6 +7,8 @@ class Router
 {
     private $moduleManager;
 
+    private $urlParameters = [];
+
     function __construct(ModuleManager $moduleManager)
     {
         $this->moduleManager = $moduleManager;
@@ -67,23 +69,68 @@ class Router
         return $uri;
     }
 
-    public function extractParams(string $path, Page $page) {
-        $parameters = [];
+    /**
+     * Retourne un tableau contenant en clé le nom du paramètre et en valeu, la valeur du paramètre
+     * Ex :
+     * [
+     *      'id' => 2
+     * ]
+     *
+     * @param string $requestPath contient le chemin de la requête, ex : "/blog/2"
+     * @param Page $page
+     * @return array
+     */
+    public function extractParams(string $requestPath, Page $page) {
+        /**
+         * On sépare chaque morceau de l'url de la page qui sert de base
+         */
+        $url = explode("/", $page->getPath());
 
-        // Change le patern \/blog\/article\/d+ en /blog/article/d+
-        $url = preg_replace("/\\\/", '', $page->getPath());
-
-        $url = explode("/", $url);
-        $path = explode("/", $path);
+        /**
+         * On sépare chaque morceau de l'url demandée
+         */
+        $path = explode("/", $requestPath);
 
         $length = count($url);
 
+        /**
+         * Pour chaque morceau de l'url définie dans definition.yml contenu dans $url (Ex : /blog/@id)
+         * [
+         *      [0] => blog
+         *      [1] => @id
+         * ]
+         *
+         * dès qu'on tombe sur une section qui commence par "@", on enlève le "@"
+         * et on se sert du nom du paramètre comme clé dans le tableau des paramètres renvoyés
+         * et dans le tableau de la requête effectuées (ex "/blog/2") on affecte la valeur du paramètre situé au même niveau du tableau
+         *
+         * [
+         *      [0] => blog
+         *      [1] => 2
+         * ]
+         *
+         * ce qui donne : (ex $parameters)
+         * [
+         *      ['id'] => 2
+         * ]
+         */
         for ($i = 0; $i < $length; $i++) {
             if (preg_match("/@/", $url[$i])) {
-                $parameters[preg_replace("/@/", "", $url[$i])] = $path[$i];
+                $this->urlParameters[preg_replace("/@/", "", $url[$i])] = $path[$i];
             }
         }
 
-        return $parameters;
+        return $this->urlParameters;
+    }
+
+    /**
+     * Retourne la valeur d'un paramètre passé dans l'url
+     * Utile notamment dans les vue grâce à {{ router.urlParameter('article_id') }}
+     *
+     * @param string $label
+     * @return mixed
+     */
+    public function getUrlParameter(string $label) {
+        return $this->urlParameters[$label];
     }
 }
