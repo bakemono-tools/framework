@@ -75,7 +75,7 @@ class Page
         $this->id = $params['id'];
         $this->moduleName = $params['moduleName'];
         $this->label = $params['label'];
-        $this->url = $params['url'];
+        $this->url = new Url($params['url']);
         $this->template = $params['template'];
         $this->actions = $params['actions'];
     }
@@ -107,18 +107,15 @@ class Page
         return $this->label;
     }
 
+    /**
+     * Retourne l'expression régulière de la route définie par la Page dans definition.yml
+     *
+     * Ex : return \/a\-propos\-de\-nous\/\d+
+     *
+     * @return mixed|string
+     */
     public function getUrlPattern() {
-        $urlPattern = $this->getPath();
-        $urlPattern = preg_replace("/\-/", "\-", $urlPattern);
-        $urlPattern = preg_replace("/\//", "\/", $urlPattern);
-        if (isset($this->url['rules']) && !empty(isset($this->url['rules']))) {
-            foreach ($this->url['rules'] as $parameter => $paramPattern) {
-                $pattern = "/@" . $parameter . "/";
-                $urlPattern = preg_replace($pattern, $paramPattern, $urlPattern);
-            }
-        }
-
-        return $urlPattern;
+        return $this->url->getUrlPattern();
     }
 
     /**
@@ -126,21 +123,21 @@ class Page
      */
     public function getUrl() : array
     {
-        return $this->url;
+        return $this->url->getUrl();
     }
 
     /**
      * @return string
      */
     public function getPath(): string {
-        return $this->url['path'];
+        return $this->url->getPath();
     }
 
     /**
      * @return array
      */
     public function getUrlParameters() : array {
-        return $this->url['rules'];
+        return $this->url->getUrlParameters();
     }
 
     /**
