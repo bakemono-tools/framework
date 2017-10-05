@@ -24,7 +24,9 @@ class App
      */
     public function __construct(string $rootDirPath)
     {
-        $this->moduleManager = new ModuleManager($rootDirPath);
+        $this->rootDirPath = $rootDirPath;
+
+        $this->moduleManager = new ModuleManager($this->rootDirPath);
         $this->router = new Router($this->moduleManager);
         $this->renderer = new Renderer($this->moduleManager->getAllModules(), $rootDirPath);
 
