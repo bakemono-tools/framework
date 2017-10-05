@@ -61,6 +61,75 @@ class Url
                 $paramPattern = $this->replaceParametersRulesShortcuts($paramPattern);
                 $pattern = "/@" . $parameter . "/";
                 $urlPattern = preg_replace($pattern, $paramPattern, $urlPattern);
+
+                /**
+                 * Si le dernier paramètre est optionnel
+                 * on doit l'entourer de parenthèse pour qu'il soit ignoré par le router si le paramètre n'est pas reseigné
+                 *
+                 * Ex : L'adresse "/blog/@page" ou le paramètre page suit la règle "?integer"
+                 *
+                 * Ce que l'ont veut, c'est transformer : "\/blog\/\d+" en "\/blog(\/\d+)?"
+                 * pour indiquer que le paramètre est optionnel
+                 *
+                 * $paramPattern contient "?integer". On test si ça commence par un "?".
+                 * Si oui, on rentre dans la condition
+                 */
+                if (preg_match("/^\?/", $paramPattern)) {
+
+                    /**
+                     * On explose le pattern de l'url qui ressemble à ça
+                     * "\/blog\/\d+
+                     *
+                     * ce qui nous donne :
+                     * [
+                     *      [0] => "\"
+                     *      [1] => "blog\"
+                     *      [3] => "\d+"
+                     */
+                    $urlPattern = explode('/', $urlPattern);
+
+                    /**
+                     * On inverse le tableau pour avoir le paramètre optionnel
+                     * (Qui est toujours le dernier) en premier
+                     */
+                    $urlPattern = array_reverse($urlPattern);
+
+                    /**
+                     * Il faut ajouter, à la section qui précède le paramètre optionnel,
+                     * une parenthèse avant l'antislashe
+                     *
+                     * Ex : "blog\" doit devenir "blog(\"
+                     *
+                     * Pour faire cela, on supprime le dernier caractère de "blog\", donc le "\"
+                     */
+                    $urlPattern[1] = substr($urlPattern[1], 0, -1);
+
+                    /**
+                     * Et on lui rajoute "(\"
+                     *
+                     * on a maintenant "blog(\"
+                     */
+                    $urlPattern[1] .= "(\\";
+
+                    /**
+                     * On inverse de nouveau le tableau pour avoir le pattern dans le bon sens
+                     */
+                    $urlPattern = array_reverse($urlPattern);
+
+                    /**
+                     * On recréé la chaine de caractère
+                     *
+                     * On a maintenant "\/blog(\/\d+"
+                     */
+                    $urlPattern = implode('/', $urlPattern);
+
+                    /**
+                     * Et pour finnir on rajoute ")?" à la fin du pattern
+                     *
+                     * On obtient finalement "\/blog(\/\d+)?"
+                     */
+                    $urlPattern .= ")?";
+                }
             }
         }
 
@@ -78,11 +147,9 @@ class Url
     public function replaceParametersRulesShortcuts($ruleValue): string
     {
         /**
-         * Si la valeur définie par la règle commence par un "?"
-         * C'est que le paramètre est optionnel
-         * required vaut donc false
+         * On supprime le "?" pour que "?integer" match avec "integer" dans le switch
          */
-        $required = !preg_match("/^\?/", $ruleValue);
+        $ruleValue = preg_replace("/^\?/", "", $ruleValue);
 
         /**
          * On test chaque raccourci
@@ -94,8 +161,6 @@ class Url
         switch ($ruleValue) {
             case "integer":
                 $pattern = "\d";
-                // Si le paramètre est obligatoire on ajoute le "+" dans la regex
-                if ($required) { $pattern .= "+"; }
                 break;
             default: // Si aucun raccourci n'a été utilisé on retourne le pattern saisie dans le fichier definition.yml
                 $pattern = $ruleValue;

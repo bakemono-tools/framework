@@ -22,6 +22,7 @@ class Router
         foreach ($modules as $module) {
             foreach ($module->getPages() as $page) {
                 $pattern = "/^" . $page->getUrlPattern() . "$/";
+
                 if (preg_match($pattern, $path)) {
 
                     $params = $this->extractParams($path, $page);
@@ -64,6 +65,20 @@ class Router
                 $pattern = '/@' . $param . '/';
                 $uri = preg_replace($pattern, $value, $uri);
             }
+        }
+
+        /**
+         * Si il y a un paramètre optionnel, alors sa signature (Ex : @article_id) n'aura pas été remplacé
+         * Il faut donc la remplacer par une chaine de caractère vide
+         */
+        $pattern = "/@.+/";
+        $uri = preg_replace($pattern, "", $uri);
+
+        /**
+         * Si l'url fini par un "/", on le retire
+         */
+        if (preg_match("/\/$/", $uri)) {
+            $uri = substr($uri, 0, -1);
         }
 
         return $uri;
@@ -116,7 +131,14 @@ class Router
          */
         for ($i = 0; $i < $length; $i++) {
             if (preg_match("/@/", $url[$i])) {
-                $this->urlParameters[preg_replace("/@/", "", $url[$i])] = $path[$i];
+                /**
+                 * On vérifie que la valeur du paramètre ne soit pas vide
+                 * car si elle est vide c'est que le paramètre est optionnel
+                 * et que donc la clé $i n'existe pas
+                 */
+                if (!empty($path[$i])) {
+                    $this->urlParameters[preg_replace("/@/", "", $url[$i])] = $path[$i];
+                }
             }
         }
 
@@ -128,9 +150,13 @@ class Router
      * Utile notamment dans les vue grâce à {{ router.urlParameter('article_id') }}
      *
      * @param string $label
-     * @return mixed
+     * @return mixed|null
      */
     public function getUrlParameter(string $label) {
-        return $this->urlParameters[$label];
+        if (array_key_exists($label, $this->urlParameters)) {
+            return $this->urlParameters[$label];
+        }
+
+        return null;
     }
 }
