@@ -111,8 +111,8 @@ class Page
         $urlPattern = $this->getPath();
         $urlPattern = preg_replace("/\-/", "\-", $urlPattern);
         $urlPattern = preg_replace("/\//", "\/", $urlPattern);
-        if (isset($this->url['parameters']) && !empty(isset($this->url['parameters']))) {
-            foreach ($this->url['parameters'] as $parameter => $paramPattern) {
+        if (isset($this->url['rules']) && !empty(isset($this->url['rules']))) {
+            foreach ($this->url['rules'] as $parameter => $paramPattern) {
                 $pattern = "/@" . $parameter . "/";
                 $urlPattern = preg_replace($pattern, $paramPattern, $urlPattern);
             }
@@ -140,7 +140,7 @@ class Page
      * @return array
      */
     public function getUrlParameters() : array {
-        return $this->url['parameters'];
+        return $this->url['rules'];
     }
 
     /**
