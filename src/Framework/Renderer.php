@@ -17,13 +17,14 @@ class Renderer
     /**
      * Renderer constructor.
      *
-     * @param array|Module $modules
+     * @param array $modules
+     * @param string $rootDirPath
      */
-    public function __construct(array $modules)
+    public function __construct(array $modules, string $rootDirPath)
     {
         $this->loader = new \Twig_Loader_Filesystem();
 
-        $this->loader->addPath(__DIR__ . "/../../module", 'layouts');
+        $this->loader->addPath($rootDirPath . "/module", 'layouts');
 
         foreach ($modules as $module) {
             $this->loader->addPath($module->getTemplateDir(), $module->getLabel());
