@@ -58,9 +58,9 @@ class Url
                 /**
                  * Remplace les raccourcis utiliser dans la définition des route par leur valeur en regex
                  */
-                $paramPattern = $this->replaceParametersRulesShortcuts($paramPattern);
+                $paramPatternReplaced = $this->replaceParametersRulesShortcuts($paramPattern);
                 $pattern = "/@" . $parameter . "/";
-                $urlPattern = preg_replace($pattern, $paramPattern, $urlPattern);
+                $urlPattern = preg_replace($pattern, $paramPatternReplaced, $urlPattern);
 
                 /**
                  * Si le dernier paramètre est optionnel
