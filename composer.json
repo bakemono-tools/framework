@@ -16,7 +16,6 @@
             "module\\" : "module/"
         }
     },
-    "minimum-stability": "dev",
     "require": {
         "bakemono/orm": "^1.0",
         "guzzlehttp/psr7": "^1.4",

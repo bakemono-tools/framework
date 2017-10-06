@@ -2,6 +2,7 @@
 
 namespace Framework;
 
+use Orm\Schema;
 use Symfony\Component\Yaml\Yaml;
 
 class ModuleManager
@@ -138,6 +139,20 @@ class ModuleManager
         return [
             'entities' => $tmpArray
         ];
+    }
+
+    /**
+     * Retourne le schema global des entités présentes dans le framework
+     *
+     * @return Schema
+     */
+    public function getGlobalSchema(): Schema
+    {
+        $schema = new Schema();
+        $entities = $this->getMergedSchema();
+        $schema->parseEntitiesSchema($entities['entities']);
+
+        return $schema;
     }
 
     /**

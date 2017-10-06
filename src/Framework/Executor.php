@@ -3,8 +3,27 @@
 namespace framework;
 
 
+use Orm\EntityManager;
+
 class Executor
 {
+    private $moduleManager;
+
+    private $entityManager;
+
+    public function __construct(ModuleManager $moduleManager, EntityManager $entityManager)
+    {
+        $this->moduleManager = $moduleManager;
+        $this->entityManager = $entityManager;
+    }
+
+    /**
+     * Execute les actions d'une page
+     *
+     * @param array $actions
+     * @param array $params
+     * @return array
+     */
     public function execute(array $actions, array $params = []) : array
     {
         $tmpArray = [];
@@ -12,12 +31,25 @@ class Executor
         foreach ($actions as $var => $action) {
             $actionPointer = explode(':', $action);
 
+            /**
+             * Transforme une chaine de caractère : hello_world_title => helloWorldTitlensform
+             */
             $actionPointer[1] = $this->parseActionName($actionPointer[1], false);
+
+            /**
+             * Transforme une chaine de caractère : hello_world_title => helloWorldTitlensform
+             */
             $actionPointer[2] = $this->parseActionName($actionPointer[2], true);
 
+            /**
+             * On recompose le namespace
+             */
             $actionPointer[1] = "module\\" . strtolower($actionPointer[0]) . '\\action\\' . $actionPointer[1] . 'Action';
 
-            $tmpArray[$var] = call_user_func($actionPointer[1] . '::' . $actionPointer[2], $params);
+            $action = new $actionPointer[1]($this->moduleManager->getGlobalSchema(), $this->entityManager);
+            $method = $actionPointer[2];
+
+            $tmpArray[$var] = $action->$method($params);
         }
 
         return $tmpArray;
