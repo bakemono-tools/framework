@@ -33,7 +33,7 @@ class App
         $entitiesSchema = new Schema();
         $entitiesSchema->parseEntitiesSchema($this->moduleManager->getMergedSchema());
         $this->orm = new Orm($this->rootDirPath . "/config/config.yml", $entitiesSchema);
-        $this->executor = new Executor();
+        $this->executor = new Executor($this->moduleManager, $this->orm->getEntityManager());
     }
 
     /**
