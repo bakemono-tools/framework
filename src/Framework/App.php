@@ -83,6 +83,7 @@ class App
              * On stocke les variables renvoyées par les actions dans $variables.
              */
             if ($page->getActions() !== null) {
+                $this->executor->addRequest($request);
                 $variables = $this->executor->execute($page->getActions(), $page->getActionsParameters());
             }
 

@@ -3,13 +3,17 @@
 namespace framework;
 
 
+use GuzzleHttp\Psr7\Request;
 use Orm\EntityManager;
+use Psr\Http\Message\ServerRequestInterface;
 
 class Executor
 {
     private $moduleManager;
 
     private $entityManager;
+
+    private $request;
 
     public function __construct(ModuleManager $moduleManager, EntityManager $entityManager)
     {
@@ -46,7 +50,7 @@ class Executor
              */
             $actionPointer[1] = "module\\" . strtolower($actionPointer[0]) . '\\action\\' . $actionPointer[1] . 'Action';
 
-            $action = new $actionPointer[1]($this->moduleManager->getGlobalSchema(), $this->entityManager);
+            $action = new $actionPointer[1]($this->moduleManager->getGlobalSchema(), $this->entityManager, $this->request);
             $method = $actionPointer[2];
 
             $tmpArray[$var] = $action->$method($params);
@@ -82,5 +86,9 @@ class Executor
         }
 
         return $response;
+    }
+
+    public function addRequest(ServerRequestInterface $request) {
+        $this->request = $request;
     }
 }
