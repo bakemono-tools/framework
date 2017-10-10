@@ -5,6 +5,7 @@ namespace framework;
 
 use GuzzleHttp\Psr7\Request;
 use Orm\EntityManager;
+use Orm\Schema;
 use Psr\Http\Message\ServerRequestInterface;
 
 class Executor
@@ -50,7 +51,10 @@ class Executor
              */
             $actionPointer[1] = "module\\" . strtolower($actionPointer[0]) . '\\action\\' . $actionPointer[1] . 'Action';
 
-            $action = new $actionPointer[1]($this->moduleManager->getGlobalSchema(), $this->entityManager, $this->request);
+            $schema = new Schema();
+            $schema->parseEntitiesSchema($this->moduleManager->getMergedSchema());
+            
+            $action = new $actionPointer[1]($schema, $this->entityManager, $this->request);
             $method = $actionPointer[2];
 
             $tmpArray[$var] = $action->$method($params);
