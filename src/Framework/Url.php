@@ -162,6 +162,9 @@ class Url
             case "integer":
                 $pattern = "\d";
                 break;
+            case "slug":
+                $pattern = "/^[a-z0-9]+(?:-[a-z0-9]+)*$/";
+                break;
             default: // Si aucun raccourci n'a été utilisé on retourne le pattern saisie dans le fichier definition.yml
                 $pattern = $ruleValue;
         }
