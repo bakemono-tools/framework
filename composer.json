@@ -23,6 +23,7 @@
         "http-interop/response-sender": "^1.0",
         "twig/twig": "^2.4",
         "symfony/console": "^3.3",
-        "php-di/php-di": "^5.4"
+        "php-di/php-di": "^5.4",
+        "cocur/slugify": "^3.0"
     }
 }
