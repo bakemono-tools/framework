@@ -2,10 +2,10 @@
 
 namespace Framework;
 
-use GuzzleHttp\Psr7\Request;
 use Orm\EntityManager;
 use Orm\FormBuilder;
 use Orm\Schema;
+use Psr\Http\Message\ServerRequestInterface;
 
 class Action
 {
@@ -15,7 +15,7 @@ class Action
 
     protected $request;
 
-    public function __construct(Schema $schema, EntityManager $entityManager, Request $request)
+    public function __construct(Schema $schema, EntityManager $entityManager, ServerRequestInterface $request)
     {
         $this->formBuilder = new FormBuilder($schema);
         $this->em = $entityManager;
@@ -31,9 +31,9 @@ class Action
     }
 
     /**
-     * @return Request
+     * @return ServerRequestInterface
      */
-    public function getRequest() : Request
+    public function getRequest() : ServerRequestInterface
     {
         return $this->request;
     }
