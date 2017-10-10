@@ -76,9 +76,13 @@ class Router
 
         /**
          * Si l'url fini par un "/", on le retire
+         *
+         * On vérifie avant que la route ne soit pas la racine "/" car dans ce cas, il ne faut pas enlver le "/"
          */
-        if (preg_match("/\/$/", $uri)) {
-            $uri = substr($uri, 0, -1);
+        if (!preg_match("/^\/$/", $uri)) {
+            if (preg_match("/\/$/", $uri)) {
+                $uri = substr($uri, 0, -1);
+            }
         }
 
         return $uri;
